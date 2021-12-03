@@ -19,6 +19,8 @@ import argparse
 
 
 class ExtendAction(argparse.Action):
+    """Custom argparse action to mimic the ``extend`` action which was made available as of Python 3.8."""
+
     def __call__(self, parser, namespace, values, option_string=None):
         items = getattr(namespace, self.dest) or []
         items.extend(values)
