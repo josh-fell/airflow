@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -15,20 +14,12 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-set -euo pipefail
 
-if [[ $# == "0" ]]; then
-    echo "ERROR: Pass provider ids as list"
-    exit 1
-fi
+import argparse
 
-provider_filters=()
-for provider in "${@}"
-do
-    provider_filters+=("apache-airflow-providers-${provider//./-}")
-done
 
-./docs/publish_docs.py \
-    --package-filter apache-airflow-providers \
-    "${provider_filters[@]}"
-cd "${AIRFLOW_SITE_DIRECTORY}"
+class ExtendAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        items = getattr(namespace, self.dest) or []
+        items.extend(values)
+        setattr(namespace, self.dest, items)

@@ -755,6 +755,20 @@ instance, for using it with Amazon, the command would be:
 
      ./breeze build-docs -- --package-filter apache-airflow-providers-amazon
 
+If you need to build documentation for multiple packages, simply pass multiple ``<PACKAGE-NAME>`` values:
+
+.. code-block:: bash
+
+     ./breeze build-docs -- --package-filter apache-airflow-providers-amazon apache-airflow-providers-google
+
+The ``--package-filter`` flag does support use of wildcards. For example, to build docs for all of
+the Apache providers you could use the below command. Note that when using wildcards, the ``<PACKAGE-NAME>``
+value needs to be an explicit string.
+
+.. code-block:: bash
+
+     ./breeze build-docs -- --package-filter 'apache-airflow-providers-apache-*'
+
 Often errors during documentation generation come from the docstrings of auto-api generated classes.
 During the docs building auto-api generated files are stored in the ``docs/_api`` folder. This helps you
 easily identify the location the problems with documentation originated from.

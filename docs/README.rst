@@ -53,11 +53,25 @@ or just to run documentation building
 
      ./breeze build-docs -- --docs-only
 
-Also, you can only build one documentation via ``--package-filter``.
+Also, you can specify for which packages the documentation is to be built via ``--package-filter``.
+
+For a single provider:
 
 .. code-block:: bash
 
     ./breeze build-docs -- --package-filter <PACKAGE-NAME>
+
+For multiple providers:
+
+.. code-block:: bash
+
+    ./breeze build-docs -- --package-filter <PACKAGE-NAME-1> <PACKAGE-NAME-2>
+
+or using wildcards
+
+.. code-block:: bash
+
+    ./breeze build-docs -- --package-filter '<PARTIAL-PACKAGE-NAME>*'
 
 You can also see all the available arguments via ``--help``.
 

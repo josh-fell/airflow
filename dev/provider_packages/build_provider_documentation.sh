@@ -25,7 +25,7 @@ fi
 provider_filters=()
 for provider in "${@}"
 do
-    provider_filters+=("--package-filter" "apache-airflow-providers-${provider//./-}")
+    provider_filters+=("apache-airflow-providers-${provider//./-}")
 done
 
 ./breeze build-docs -- \

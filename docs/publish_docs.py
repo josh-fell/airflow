@@ -19,7 +19,9 @@
 
 import argparse
 import os
+import sys
 
+from docs.exts.docs_build.actions import ExtendAction
 from docs.exts.docs_build.docs_builder import AirflowDocsBuilder
 from docs.exts.docs_build.package_filter import process_package_filters
 from docs.exts.provider_yaml_utils import load_package_data
@@ -58,6 +60,13 @@ def get_available_packages():
     ]
 
 
+def _get_extend_action():
+    if sys.version_info < (3, 8):
+        return ExtendAction
+    else:
+        return "extend"
+
+
 def _get_parser():
     available_packages_list = " * " + "\n * ".join(get_available_packages())
     parser = argparse.ArgumentParser(
@@ -76,9 +85,11 @@ def _get_parser():
     )
     parser.add_argument(
         "--package-filter",
-        action="append",
+        action=_get_extend_action(),
+        nargs="+",
         help=(
-            "Filter specifying for which packages the documentation is to be built. Wildcard are supported."
+            "Filter specifying for which packages the documentation is to be built. Multiple packages and "
+            "wildcards are supported."
         ),
     )
 
