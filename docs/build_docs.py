@@ -27,6 +27,7 @@ from tabulate import tabulate
 
 from airflow.utils.helpers import partition
 from docs.exts.docs_build import dev_index_generator, lint_checks
+from docs.exts.docs_build.actions import ExtendAction
 from docs.exts.docs_build.code_utils import CONSOLE_WIDTH, PROVIDER_INIT_FILE
 from docs.exts.docs_build.docs_builder import DOCS_DIR, AirflowDocsBuilder, get_available_packages
 from docs.exts.docs_build.errors import DocBuildError, display_errors_summary
@@ -72,7 +73,7 @@ def _promote_new_flags():
         console.print()
         console.print("[yellow]Still too slow?[/]")
         console.print()
-    console.print("You can only build one documentation package:")
+    console.print("You can specify for which packages the documentation is to be built:")
     console.print("    [blue]./breeze build-docs -- --package-filter <PACKAGE-NAME>[/]")
     console.print()
     console.print("This usually takes from [yellow]20 seconds[/] to [yellow]2 minutes[/].")
@@ -84,6 +85,13 @@ def _promote_new_flags():
     console.print("For more info:")
     console.print("   [blue]./breeze build-docs --help[/]")
     console.print()
+
+
+def _get_extend_action():
+    if sys.version_info < (3, 8):
+        return ExtendAction
+    else:
+        return "extend"
 
 
 def _get_parser():
@@ -104,9 +112,11 @@ def _get_parser():
     )
     parser.add_argument(
         "--package-filter",
-        action="append",
+        action=_get_extend_action(),
+        nargs="+",
         help=(
-            "Filter specifying for which packages the documentation is to be built. Wildcard are supported."
+            "Filter specifying for which packages the documentation is to be built. Multiple packages and "
+            "wildcards are supported."
         ),
     )
     parser.add_argument('--docs-only', dest='docs_only', action='store_true', help='Only build documentation')

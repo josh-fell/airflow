@@ -278,8 +278,7 @@ export AIRFLOW_SITE_DIRECTORY="$(pwd)"
 cd "${AIRFLOW_REPO_ROOT}"
 ./breeze build-docs -- \
   --for-production \
-  --package-filter apache-airflow-providers \
-  --package-filter 'apache-airflow-providers-*'
+  --package-filter apache-airflow-providers 'apache-airflow-providers-*'
 ```
 
 Usually when we release packages we also build documentation for the "documentation-only" packages. This
@@ -293,8 +292,8 @@ cd "${AIRFLOW_REPO_ROOT}"
 ./breeze build-docs -- \
   --for-production \
   --package-filter apache-airflow-providers \
-  --package-filter 'apache-airflow-providers-PACKAGE1' \
-  --package-filter 'apache-airflow-providers-PACKAGE2' \
+  'apache-airflow-providers-PACKAGE1' \
+  'apache-airflow-providers-PACKAGE2'
   ...
 ```
 
@@ -323,8 +322,7 @@ All providers (including overriding documentation for doc-only changes):
 
 ```shell script
 ./docs/publish_docs.py \
-    --package-filter apache-airflow-providers \
-    --package-filter 'apache-airflow-providers-*' \
+    --package-filter apache-airflow-providers 'apache-airflow-providers-*' \
     --override-versioned
 
 cd "${AIRFLOW_SITE_DIRECTORY}"
