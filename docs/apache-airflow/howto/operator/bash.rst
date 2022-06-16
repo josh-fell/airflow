@@ -47,7 +47,7 @@ You can use :ref:`Jinja templates <concepts:jinja-templating>` to parameterize t
 .. warning::
 
     Care should be taken with "user" input or when using Jinja templates in the
-    ``bash_command``, as this bash operator does not perform any escaping or
+    ``bash_command``, as this operator does not perform any escaping or
     sanitization of the command.
 
     This applies mostly to using "dag_run" conf, as that can be submitted via
@@ -64,7 +64,7 @@ For example, do **not** do this:
     )
 
 Instead, you should pass this via the ``env`` kwarg and use double-quotes
-inside the bash_command, as below:
+inside the ``bash_command``, as below:
 
 .. code-block:: python
 
@@ -83,6 +83,7 @@ pass ``skip_exit_code``).
 
 .. exampleinclude:: /../../airflow/example_dags/example_bash_operator.py
     :language: python
+    :dedent: 4
     :start-after: [START howto_operator_bash_skip]
     :end-before: [END howto_operator_bash_skip]
 
@@ -93,23 +94,37 @@ Troubleshooting
 Jinja template not found
 """"""""""""""""""""""""
 
-Add a space after the script name when directly calling a Bash script with
-the ``bash_command`` argument. This is because Airflow tries to apply a Jinja
-template to it, which will fail.
+Add a semicolon or space at the end of the ``bash_command`` argument should the value end with ".sh"
+or ".bash". The BashOperator assumes a ``bash_command`` ending with ".sh" or ".bash" is a file
+to be executed and attempts to render any Jinja templating within the file. This error typically occurs when
+chaining Bash commands together with the final command referencing a Bash script. Meaning, the entire string
+of sequential commands will be treated as the name of a file to executed by the BashOperator.
+
+Instead of:
 
 .. code-block:: python
 
     t2 = BashOperator(
         task_id="bash_example",
-        # This fails with 'Jinja template not found' error
-        # bash_command="/home/batcher/test.sh",
-        # This works (has a space after)
-        bash_command="/home/batcher/test.sh ",
+        # This fails with 'jinja2.exceptions.TemplateNotFound' error
+        bash_command="cd /home/utils/batcher && sh test.sh",
         dag=dag,
     )
 
-However, if you want to use templating in your bash script, do not add the space
-and instead put your bash script in a location relative to the directory containing
+
+Do this:
+
+.. code-block:: python
+
+    t2 = BashOperator(
+        task_id="bash_example",
+        # This works (has a semicolon after)
+        bash_command="cd /home/utils/batcher && sh test.sh;",
+        dag=dag,
+    )
+
+However, if you want to use templating in your Bash script, do not add the semicolon or space,
+but instead put your Bash script in a location relative to the directory containing
 the DAG file. So if your DAG file is in ``/usr/local/airflow/dags/test_dag.py``, you can
 move your ``test.sh`` file to any location under ``/usr/local/airflow/dags/`` (Example:
 ``/usr/local/airflow/dags/scripts/test.sh``) and pass the relative path to ``bash_command``
@@ -124,7 +139,7 @@ as shown below:
         dag=dag,
     )
 
-Creating separate folder for bash scripts may be desirable for many reasons, like
+Creating separate folder for Bash scripts may be desirable for many reasons, like
 separating your script's logic and pipeline code, allowing for proper code highlighting
 in files composed in different languages, and general flexibility in structuring
 pipelines.
@@ -140,6 +155,6 @@ Example:
     t2 = BashOperator(
         task_id="bash_example",
         # "test.sh" is a file under "/opt/scripts"
-        bash_command="test.sh ",
+        bash_command="test.sh",
         dag=dag,
     )
